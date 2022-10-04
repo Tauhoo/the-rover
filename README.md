@@ -44,4 +44,8 @@ If a player can extract Graxium successfully, the game will end. And, the winner
 
 ## Out-game Mechanism
 
+---
+
 If you win a match making, you will get some money from the game. The amount of money is depend on your match's rank. The higher rank you are, you will encounter the more dangerous planet and the more strong player in matchs.
+
+You can use money to by new card and new auto parts. So, you can use in the game.
