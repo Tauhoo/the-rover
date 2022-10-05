@@ -14,15 +14,13 @@ This is the first state in game. User will know how the planet environment is. S
 
 In this state, player will take thier turn and do actions. Actions are devided into 3 type.
 
-1. Scaning the terrain. This action will provide player infomation if Graxium is in the radius of scanner or not.
+1. Scaning the terrain. This action will provide player infomation if Graxium is in the radius of scanner or not. when you scan, if you are at Graxium point, you will discover it.
 2. Use some action card such as shoot missile or teleport.
 3. Move the car (Depend on speed and environment). This move will reduce player's energy too.
 
-If the player found the hord of the Graxium, player need to protect it from the others player.
-
 ## End-game state
 
-If a player can extract Graxium successfully, the game will end. And, the winner is the extracter.
+If the player found the hord of the Graxium and extract it successfully, the game will end. And, the winner is the extracter.
 
 ## Out-game Mechanism
 
