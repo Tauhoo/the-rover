@@ -4,13 +4,9 @@ This repository contain the materials and my work on a game design project named
 
 ## Game Type
 
----
-
 It's a board game-like game. Each player takes their turn and does some action with their card to make an advantage. it's also generative content game. So, it is replayable.
 
 ## Content Table
-
----
 
 - [Theme](./Theme.md)
 - [Mechanism](./Mechanism.md)

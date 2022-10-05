@@ -1,6 +1,4 @@
-## Theme
-
----
+# Theme
 
 It's in the far future. Aliens can be seen every where in this universe. But, In this era, the energy is shortage. After, many researching and exploration, Graxium is found. it's the most energetic ore and can solve the energy lacking problem. But, collecting them is really hard due to the bad terrain of thier inhabitant. So, there are people called The Rover. They have responsibility to find the Graxium and sell it to the energy management organization of the universe. But, Graxium in each planet isn't unlimit. So, The Rovers need to compate to each others for it. Moreover, because of the terrain and the environment in each planet, they need to custom thier vehicle so it can adapt and survive.
 
