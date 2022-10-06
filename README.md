@@ -10,3 +10,4 @@ It's a board game-like game. Each player takes their turn and does some action w
 
 - [Theme](./Theme.md)
 - [Mechanism](./Mechanism.md)
+- [AutoParts](./AutoParts.md)
