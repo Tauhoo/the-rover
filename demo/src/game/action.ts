@@ -1,23 +1,32 @@
 export type Action = {
+  agent: Agent
   type: ActionType
   info: any
 }
 
+export enum Agent {
+  SYSTEM = 'SYSTEM',
+  PLAYER = 'PLAYER',
+}
+
 export enum ActionType {
+  STATE_CHANGED = 'STATE_CHANGED',
   // waiting player
   ADD_PLAYER = 'ADD_PLAYER',
   START_GAME = 'START_GAME',
+
+  NEW_PLAYER_IS_ADDED = 'NEW_PLAYER_IS_ADDED',
   // standby
   PLAYER_IS_READY = 'PLAYER_IS_READY',
   // playing
-  // playing -> draw
+  //  -> draw
   DRAW_CARD = 'DRAW_CARD',
-  // playing -> standby
+  //  -> standby
   CHOOSE_ACTION = 'CHOOSE_ACTION',
   END_TURN = 'END_TURN',
-  // playing -> scan
+  //  -> scan
   SCAN = 'SCAN',
-  // playing -> move
+  //  -> move
   MOVE_VEHICLE = 'MOVE_VEHICLE',
 }
 
@@ -35,4 +44,8 @@ export class ActionManager {
       listener(action)
     }
   }
+}
+
+export interface ActionHandler {
+  doAction(action: Action): void
 }

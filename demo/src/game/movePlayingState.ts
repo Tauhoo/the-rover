@@ -1,12 +1,14 @@
-import { Action, ActionType } from './action'
+import { Action, ActionType, Agent } from './action'
 import { Game } from './game'
 import { PlayingStateManager } from './playingState'
 import { StandbyPlayingStateManager } from './standbyPlayingState'
+import { State, StateManager } from './state'
 
-export class MovePlayingStateManager {
+export class MovePlayingStateManager extends StateManager {
   context: PlayingStateManager
 
   constructor(context: PlayingStateManager) {
+    super(State.MOVE_PLAYING)
     this.context = context
   }
 
@@ -15,6 +17,14 @@ export class MovePlayingStateManager {
       this.context.subPlayingStateManager = new StandbyPlayingStateManager(
         this.context
       )
+      this.context.context.actionManager.sendAction({
+        agent: Agent.SYSTEM,
+        type: ActionType.STATE_CHANGED,
+        info: {
+          from: this.state,
+          to: State.STANDBY_PLAYING,
+        },
+      })
     }
   }
 }
