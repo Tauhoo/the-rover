@@ -8,6 +8,6 @@ It's a board game-like game. Each player takes their turn and does some action w
 
 ## Content Table
 
-- [Theme](./Theme.md)
-- [Mechanism](./Mechanism.md)
-- [AutoParts](./AutoParts.md)
+- [Theme](./docs/Theme.md)
+- [Mechanism](./docs/Mechanism.md)
+- [AutoParts](./docs/AutoParts.md)
