@@ -10,12 +10,9 @@ export enum Agent {
 }
 
 export enum ActionType {
-  STATE_CHANGED = 'STATE_CHANGED',
   // waiting player
   ADD_PLAYER = 'ADD_PLAYER',
   START_GAME = 'START_GAME',
-
-  NEW_PLAYER_IS_ADDED = 'NEW_PLAYER_IS_ADDED',
   // standby
   PLAYER_IS_READY = 'PLAYER_IS_READY',
   // playing

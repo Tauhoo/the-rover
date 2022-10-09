@@ -17,14 +17,6 @@ export class MovePlayingStateManager extends StateManager {
       this.context.subPlayingStateManager = new StandbyPlayingStateManager(
         this.context
       )
-      this.context.context.actionManager.sendAction({
-        agent: Agent.SYSTEM,
-        type: ActionType.STATE_CHANGED,
-        info: {
-          from: this.state,
-          to: State.STANDBY_PLAYING,
-        },
-      })
     }
   }
 }

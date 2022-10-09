@@ -21,28 +21,12 @@ export class StandbyPlayingStateManager extends StateManager {
       this.context.subPlayingStateManager = new DrawPlayingStateManager(
         this.context
       )
-      this.context.context.actionManager.sendAction({
-        agent: Agent.SYSTEM,
-        type: ActionType.STATE_CHANGED,
-        info: {
-          from: this.state,
-          to: State.DRAW_PLAYING,
-        },
-      })
     }
 
     if (action.type === ActionType.CHOOSE_ACTION) {
       this.context.subPlayingStateManager = new ScanPlayingStateManager(
         this.context
       )
-      this.context.context.actionManager.sendAction({
-        agent: Agent.SYSTEM,
-        type: ActionType.STATE_CHANGED,
-        info: {
-          from: this.state,
-          to: this.context.subPlayingStateManager.state,
-        },
-      })
     }
   }
 }

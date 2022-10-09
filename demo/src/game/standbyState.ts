@@ -22,14 +22,6 @@ export class StandbyStateManager extends StateManager {
       this.playerStandbyStatus.set(action.info.id, true)
       if (this.isAllPlayerReady()) {
         this.context.stateManager = new PlayingStateManager(this.context)
-        this.context.actionManager.sendAction({
-          agent: Agent.SYSTEM,
-          type: ActionType.STATE_CHANGED,
-          info: {
-            from: this.state,
-            to: State.PLAYING,
-          },
-        })
       }
     }
   }

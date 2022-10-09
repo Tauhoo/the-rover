@@ -15,24 +15,11 @@ export class WaitingStateManager extends StateManager {
     if (action.type === ActionType.ADD_PLAYER) {
       const newPlayer: Player = action.info
       this.context.playerManager.addPlayer(newPlayer)
-      this.context.actionManager.sendAction({
-        agent: Agent.SYSTEM,
-        type: ActionType.NEW_PLAYER_IS_ADDED,
-        info: newPlayer,
-      })
     }
 
     if (action.type === ActionType.START_GAME) {
       if (this.context.playerManager.players.length === 0) return
       this.context.stateManager = new StandbyStateManager(this.context)
-      this.context.actionManager.sendAction({
-        agent: Agent.SYSTEM,
-        type: ActionType.STATE_CHANGED,
-        info: {
-          from: this.state,
-          to: State.STANDBY,
-        },
-      })
     }
   }
 }
