@@ -1,13 +1,19 @@
-import { ActionType, Agent } from './game/action'
-import { Game } from './game/game'
-import { Player } from './game/player'
+import express from 'express'
+import { Server } from 'socket.io'
+import http from 'http'
 
-const game = new Game()
+const app = express()
+const server = http.createServer(app)
+const io = new Server(server)
 
-game.actionManager.sendAction({
-  type: ActionType.ADD_PLAYER,
-  agent: Agent.PLAYER,
-  info: new Player('ice'),
+app.get('/', (req, res) => {
+  res.send('<h1>Hello world</h1>')
 })
 
-console.log(game.playerManager.players)
+io.on('connection', socket => {
+  console.log('a user connected')
+})
+
+server.listen(3000, () => {
+  console.log('listening on *:3000')
+})
