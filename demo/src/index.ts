@@ -1,7 +1,13 @@
-const world = 'world'
+import { ActionType } from './game/action'
+import { Game } from './game/game'
 
-export function hello(who: string = world): string {
-  return `Hello i ${who}! `
-}
+const game = new Game()
 
-console.log(hello())
+game.actionManager.sendAction({
+  type: ActionType.ADD_PLAYER,
+  info: {
+    name: 'ice',
+  },
+})
+
+console.log(game.playerManager.players)
