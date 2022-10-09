@@ -1,12 +1,6 @@
 export type Action = {
-  agent: Agent
   type: ActionType
   info: any
-}
-
-export enum Agent {
-  SYSTEM = 'SYSTEM',
-  PLAYER = 'PLAYER',
 }
 
 export enum ActionType {

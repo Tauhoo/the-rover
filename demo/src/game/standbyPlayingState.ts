@@ -1,4 +1,4 @@
-import { Action, ActionType, Agent } from './action'
+import { Action, ActionType } from './action'
 import { DrawPlayingStateManager } from './drawPlayingState'
 import { PlayingStateManager } from './playingState'
 import { ScanPlayingStateManager } from './scanPlayingState'

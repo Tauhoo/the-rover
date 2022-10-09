@@ -1,5 +1,4 @@
-import { Action, ActionType, Agent } from './action'
-import { Game } from './game'
+import { Action, ActionType } from './action'
 import { PlayingStateManager } from './playingState'
 import { StandbyPlayingStateManager } from './standbyPlayingState'
 import { State, StateManager } from './state'

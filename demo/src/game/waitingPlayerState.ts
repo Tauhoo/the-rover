@@ -1,4 +1,4 @@
-import { Action, ActionType, Agent } from './action'
+import { Action, ActionType } from './action'
 import { Game } from './game'
 import { Player } from './player'
 import { StandbyStateManager } from './standbyState'
@@ -13,6 +13,12 @@ export class WaitingStateManager extends StateManager {
 
   doAction(action: Action): void {
     if (action.type === ActionType.ADD_PLAYER) {
+      if (
+        this.context.options.maxPlayer ===
+        this.context.playerManager.players.length
+      )
+        return
+
       const newPlayer: Player = action.info
       this.context.playerManager.addPlayer(newPlayer)
     }

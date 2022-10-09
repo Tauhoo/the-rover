@@ -1,4 +1,4 @@
-import { Action, ActionType, Agent } from './action'
+import { Action, ActionType } from './action'
 import { Game } from './game'
 import { Player } from './player'
 import { PlayingStateManager } from './playingState'
