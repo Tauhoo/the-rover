@@ -2,6 +2,7 @@ import { Action, ActionType } from './action'
 import { PlayingStateManager } from './playingState'
 import { StandbyPlayingStateManager } from './standbyPlayingState'
 import { State, StateManager } from './state'
+import { WaitingStateManager } from './waitingPlayerState'
 
 export enum ScanResult {
   NEAR = 'NEAR',
@@ -20,9 +21,17 @@ export class ScanPlayingStateManager extends StateManager {
 
   doAction(action: Action): void {
     if (action.type === ActionType.SCAN) {
+      const result = this.scan()
+
+      if (result === ScanResult.FOUND) {
+        this.context.context.stateManager = new WaitingStateManager(
+          this.context.context
+        )
+      }
+
       this.context
         .getCurrentPlayerGameInfo()
-        .addScanRecordAtCurrentPosition(this.scan())
+        .addScanRecordAtCurrentPosition(result)
 
       this.context.subPlayingStateManager = new StandbyPlayingStateManager(
         this.context
