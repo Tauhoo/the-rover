@@ -1,4 +1,5 @@
 import { Action } from './action'
+import { Board, BoardOptions } from './board'
 import { DrawPlayingStateManager } from './drawPlayingState'
 import { Game } from './game'
 import { NewDefaultPlayerGameInfo, PlayerGameInfo } from './PlayerGameInfo'
@@ -9,14 +10,18 @@ export class PlayingStateManager extends StateManager {
   currentTurnPlayerIndex: number = 0
   subPlayingStateManager: StateManager
   playerGameInfos: PlayerGameInfo[]
+  board: Board
 
-  constructor(context: Game) {
+  constructor(
+    context: Game,
+    boardOptions: BoardOptions,
+    playerGameInfos: PlayerGameInfo[]
+  ) {
     super(State.PLAYING)
     this.context = context
     this.subPlayingStateManager = new DrawPlayingStateManager(this)
-    this.playerGameInfos = this.context.playerManager.players.map(player =>
-      NewDefaultPlayerGameInfo(player)
-    )
+    this.board = new Board(boardOptions)
+    this.playerGameInfos = playerGameInfos
   }
 
   getCurrentPlayerGameInfo(): PlayerGameInfo {

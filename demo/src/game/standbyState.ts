@@ -21,7 +21,11 @@ export class StandbyStateManager extends StateManager {
     if (action.type === ActionType.PLAYER_IS_READY) {
       this.playerStandbyStatus.set(action.info.id, true)
       if (this.isAllPlayerReady()) {
-        this.context.stateManager = new PlayingStateManager(this.context)
+        this.context.stateManager = new PlayingStateManager(
+          this.context,
+          action.info.boardGameOptions,
+          action.info.PlayerGameInfos
+        )
       }
     }
   }
