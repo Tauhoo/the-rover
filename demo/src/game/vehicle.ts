@@ -8,7 +8,7 @@ export const requiredAutoPartTypes = [
   AutoPartType.SKELETON,
 ]
 
-class AutoPartLocation {
+export class AutoPartLocation {
   autoPart: AutoPart
   position: Victer
   constructor(autoPart: AutoPart, position: Victer) {
