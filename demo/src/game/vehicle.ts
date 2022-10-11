@@ -1,5 +1,5 @@
 import Victer from 'victor'
-import { AutoPart, AutoPartType } from './autoPart'
+import { AutoPart, AutoPartType, isConnectorsCompatible } from './autoPart'
 
 export const requiredAutoPartTypes = [
   AutoPartType.ENGIN,
@@ -8,17 +8,47 @@ export const requiredAutoPartTypes = [
   AutoPartType.SKELETON,
 ]
 
-type AutoPartNode = {
+class AutoPartLocation {
   autoPart: AutoPart
   position: Victer
+  constructor(autoPart: AutoPart, position: Victer) {
+    this.autoPart = autoPart
+    this.position = position
+  }
+  canConnectWith(autoPartLocation: AutoPartLocation): boolean {
+    const as = autoPartLocation.autoPart.connecters
+    const bs = this.autoPart.connecters
+
+    for (const a of as) {
+      for (const b of bs) {
+        if (
+          isConnectorsCompatible(
+            {
+              connecter: a,
+              offsetPosition: autoPartLocation.position,
+            },
+            {
+              connecter: b,
+              offsetPosition: this.position,
+            }
+          )
+        )
+          return true
+      }
+    }
+    return false
+  }
 }
 
-function isAutoPartNodeIntercept(a: AutoPartNode, b: AutoPartNode): boolean {
+function isAutoPartLocationIntercept(
+  a: AutoPartLocation,
+  b: AutoPartLocation
+): boolean {
   const aPositions = JSON.parse(
-    JSON.stringify(a.autoPart.options.positions)
+    JSON.stringify(a.autoPart.positions)
   ) as Victer[]
   const bPositions = JSON.parse(
-    JSON.stringify(b.autoPart.options.positions)
+    JSON.stringify(b.autoPart.positions)
   ) as Victer[]
 
   const positionMap = new Map<number, number[]>()
@@ -33,26 +63,32 @@ function isAutoPartNodeIntercept(a: AutoPartNode, b: AutoPartNode): boolean {
 
 type VehicleOptions = {
   requiredAutoPartTypes: AutoPartType[]
-  autoPartNodes: AutoPartNode[]
+  autoPartLocations: AutoPartLocation[]
   maxCapabilityPoint: number
 }
 
 export class Vehicle {
   requiredAutoPartTypes: AutoPartType[]
-  autoPartNodes: AutoPartNode[]
+  autoPartLocations: AutoPartLocation[]
   maxCapabilityPoint: number
   constructor(options: VehicleOptions) {
-    this.autoPartNodes = options.autoPartNodes
+    this.autoPartLocations = options.autoPartLocations
     this.requiredAutoPartTypes = options.requiredAutoPartTypes
     this.maxCapabilityPoint = options.maxCapabilityPoint
   }
 
-  validateNewAutoPart(newAutoPartNode: AutoPartNode) {
+  validateNewAutoPart(newAutoPartLocation: AutoPartLocation): boolean {
     // validate interception
-    for (const autoPartNode of this.autoPartNodes) {
-      if (isAutoPartNodeIntercept(autoPartNode, newAutoPartNode)) return false
+    for (const autoPartLocation of this.autoPartLocations) {
+      if (isAutoPartLocationIntercept(autoPartLocation, newAutoPartLocation))
+        return false
     }
 
     // validate connecter compatability
+    for (const autoPartLocation of this.autoPartLocations) {
+      if (newAutoPartLocation.canConnectWith(autoPartLocation)) return true
+    }
+
+    return false
   }
 }
