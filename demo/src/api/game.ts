@@ -4,6 +4,7 @@ import { ActionType } from '../game/action'
 import { Game } from '../game/game'
 import playerRouter from './player'
 import readinessRouter from './readiness'
+import playerTurn from './playerTurn'
 
 const router = express.Router()
 
@@ -26,5 +27,6 @@ router.put('/start', (req, res) => {
 
 router.use('/players', playerRouter)
 router.use('/readinesses', readinessRouter)
+router.use('/player-turns', playerTurn)
 
 export default router

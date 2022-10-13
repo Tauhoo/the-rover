@@ -1,5 +1,6 @@
-import { Action, ActionType } from './action'
+import { Action, ActionType, PlayingActionType } from './action'
 import { DrawPlayingStateManager } from './drawPlayingState'
+import { MovePlayingStateManager } from './movePlayingState'
 import { PlayingStateManager } from './playingState'
 import { ScanPlayingStateManager } from './scanPlayingState'
 import { State, StateManager } from './state'
@@ -24,9 +25,17 @@ export class StandbyPlayingStateManager extends StateManager {
     }
 
     if (action.type === ActionType.CHOOSE_ACTION) {
-      this.context.subPlayingStateManager = new ScanPlayingStateManager(
-        this.context
-      )
+      if ((action.info as PlayingActionType) === PlayingActionType.SCAN) {
+        this.context.subPlayingStateManager = new ScanPlayingStateManager(
+          this.context
+        )
+      } else if (
+        (action.info as PlayingActionType) === PlayingActionType.MOVE_VEHICLE
+      ) {
+        this.context.subPlayingStateManager = new MovePlayingStateManager(
+          this.context
+        )
+      }
     }
   }
 }

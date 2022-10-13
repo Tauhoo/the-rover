@@ -21,6 +21,13 @@ export enum ActionType {
   MOVE_VEHICLE = 'MOVE_VEHICLE',
 }
 
+export enum PlayingActionType {
+  //  -> scan
+  SCAN = 'SCAN',
+  //  -> move
+  MOVE_VEHICLE = 'MOVE_VEHICLE',
+}
+
 type ActionListener = (action: Action) => void
 
 export class ActionManager {

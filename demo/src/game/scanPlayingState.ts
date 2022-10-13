@@ -1,4 +1,5 @@
 import { Action, ActionType } from './action'
+import { EndStateManager } from './endGameState'
 import { PlayingStateManager } from './playingState'
 import { StandbyPlayingStateManager } from './standbyPlayingState'
 import { State, StateManager } from './state'
@@ -22,16 +23,16 @@ export class ScanPlayingStateManager extends StateManager {
   doAction(action: Action): void {
     if (action.type === ActionType.SCAN) {
       const result = this.scan()
+      const currentPlayer = this.context.getCurrentPlayerGameInfo()
+      currentPlayer.addScanRecordAtCurrentPosition(result)
 
       if (result === ScanResult.FOUND) {
-        this.context.context.stateManager = new WaitingStateManager(
-          this.context.context
+        this.context.context.stateManager = new EndStateManager(
+          this.context.context,
+          currentPlayer.player.id,
+          this.context.playerGameInfos
         )
       }
-
-      this.context
-        .getCurrentPlayerGameInfo()
-        .addScanRecordAtCurrentPosition(result)
 
       this.context.subPlayingStateManager = new StandbyPlayingStateManager(
         this.context
