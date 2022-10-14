@@ -25,6 +25,11 @@ router.put('/start', (req, res) => {
   io.emit(GameClientTopic.GAME_STARTED)
 })
 
+router.get('/state', (req, res) => {
+  const game: Game = req.app.get('game')
+  res.send({ state: game.stateManager.state })
+})
+
 router.use('/players', playerRouter)
 router.use('/readinesses', readinessRouter)
 router.use('/player-turns', playerTurn)

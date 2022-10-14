@@ -11,13 +11,6 @@ enum PlayerClientTopic {
 
 const router = express.Router()
 
-router.use('/', (req, res, next) => {
-  const game: Game = req.app.get('game')
-  if (game.stateManager.state !== State.WAITING_PLAYER)
-    return res.sendStatus(404)
-  next()
-})
-
 router.get('/list', (req: express.Request, res: express.Response) => {
   const game: Game = req.app.get('game')
   res.send(game.playerManager.players)
@@ -25,12 +18,16 @@ router.get('/list', (req: express.Request, res: express.Response) => {
 
 router.post('/', (req: express.Request, res: express.Response) => {
   const game: Game = req.app.get('game')
+
+  if (game.stateManager.state !== State.WAITING_PLAYER)
+    return res.sendStatus(404)
+
   const io: Server = res.app.get('io')
   const newPlayer = new Player(req.body.name)
 
   game.actionManager.sendAction({
     type: ActionType.ADD_PLAYER,
-    info: new Player(req.body.name),
+    info: newPlayer,
   })
   res.send(newPlayer)
   io.emit(PlayerClientTopic.UPDATE_PLAYERS, game.playerManager.players)

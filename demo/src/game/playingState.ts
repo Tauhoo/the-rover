@@ -2,7 +2,7 @@ import { Action } from './action'
 import { Board, BoardOptions } from './board'
 import { DrawPlayingStateManager } from './drawPlayingState'
 import { Game } from './game'
-import { NewDefaultPlayerGameInfo, PlayerGameInfo } from './PlayerGameInfo'
+import { PlayerGameInfo } from './playerGameInfo'
 import { State, StateManager } from './state'
 
 export class PlayingStateManager extends StateManager {
@@ -26,6 +26,15 @@ export class PlayingStateManager extends StateManager {
 
   getCurrentPlayerGameInfo(): PlayerGameInfo {
     return this.playerGameInfos[this.currentTurnPlayerIndex]
+  }
+
+  getPlayerInfoByID(id: string): PlayerGameInfo | null {
+    const result = this.playerGameInfos.filter(info => info.player.id === id)
+    if (result.length !== 1) {
+      return null
+    } else {
+      return result[0]
+    }
   }
 
   doAction(action: Action): void {

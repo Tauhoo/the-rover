@@ -11,10 +11,12 @@ const game = new Game({ maxPlayer: 5 })
 
 app.set('game', game)
 app.set('io', io)
-
 app.use('/resources', express.static('resources'))
-app.use('/', express.json())
-app.use('/game', gameRouter)
+
+const router = express.Router()
+router.use('/', express.json())
+router.use('/game', gameRouter)
+app.use('/api', router)
 
 io.on('connection', socket => {
   console.log('a user connected')

@@ -31,10 +31,11 @@ export class StandbyStateManager extends StateManager {
   }
 
   isAllPlayerReady(): boolean {
-    let isReady: boolean = false
+    let isReady: boolean = true
     for (const [_, status] of this.playerStandbyStatus.entries()) {
       isReady = isReady && status
     }
+
     return isReady
   }
 }

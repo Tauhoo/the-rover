@@ -1,9 +1,12 @@
 import express from 'express'
 import { Server } from 'socket.io'
+import Victor from 'victor'
 import { ActionType } from '../game/action'
 import { Game } from '../game/game'
 import { State } from '../game/state'
 import { StandbyStateManager } from '../game/standbyState'
+import { NewDefaultPlayerGameInfo } from '../game/playerGameInfo'
+import { Player } from '../game/player'
 
 enum ReadinessesClientTopic {
   UPDATE_READINESSES = 'UPDATE_READINESSES',
@@ -33,10 +36,23 @@ router.patch('/', (req, res) => {
   const game: Game = req.app.get('game')
   const io: Server = res.app.get('io')
   const standbyStateManager = game.stateManager as StandbyStateManager
-
+  const height = 30
+  const width = 30
   game.actionManager.sendAction({
     type: ActionType.PLAYER_IS_READY,
-    info: { id: playerID },
+    info: {
+      id: playerID,
+      boardGameOptions: { height, width },
+      playerGameInfos: game.playerManager.players.map(player =>
+        NewDefaultPlayerGameInfo(
+          player as Player,
+          new Victor(
+            Math.floor(Math.random() * width),
+            Math.floor(Math.random() * height)
+          )
+        )
+      ),
+    },
   })
   const playerStandbyStatus = Object.fromEntries(
     standbyStateManager.playerStandbyStatus.entries()

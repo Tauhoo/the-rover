@@ -1,6 +1,6 @@
 import { Action } from './action'
 import { Game } from './game'
-import { PlayerGameInfo } from './PlayerGameInfo'
+import { PlayerGameInfo } from './playerGameInfo'
 import { State, StateManager } from './state'
 
 export class EndStateManager extends StateManager {
