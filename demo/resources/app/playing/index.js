@@ -8,15 +8,30 @@ var data = {
     },
     playerInfos: [],
     myPlayerInfo: null,
-    stateInfo: null,
+    movingPathSelection: { movePath: [] },
+    event: {
+        boardMouseMovePosition: {
+            cursor: { x: 0, y: 0 },
+            tile: { x: 0, y: 0 },
+        }
+    }
 }
 
 jQuery(async function () {
     await initData()
     registerTopic()
-    renderBoard()
     renderPlayersMenu()
     renderPanel()
+    frameInit()
+    $("#board").on("mousemove", (e) => {
+        data.event.boardMouseMovePosition.cursor.x = e.offsetX
+        data.event.boardMouseMovePosition.cursor.y = e.offsetY
+        const blockWidth = data.board.width / data.board.tileSet[0].length
+        const blockHeight = data.board.height / data.board.tileSet.length
+        data.event.boardMouseMovePosition.tile.x = Math.floor(e.offsetX / blockWidth)
+        data.event.boardMouseMovePosition.tile.y = Math.floor(e.offsetY / blockHeight)
+    })
+    $("#board").on("click", boardClickHandler)
 })
 
 function isMyTurn() {
@@ -57,24 +72,109 @@ async function updateMyPlayerInfo() {
     data.myPlayerInfo = info
 }
 
-async function renderBoard() {
+function frameInit() {
+    renderBoard()
+    requestAnimationFrame(frameInit)
+}
+
+function renderBoard() {
     /**
      * @type {HTMLCanvasElement}
      */
     const canvas = $("#board").get(0)
     const ctx = canvas.getContext('2d')
+    const blockWidth = data.board.width / data.board.tileSet[0].length
+    const blockHeight = data.board.height / data.board.tileSet.length
 
-    console.log(data.board.tileSet.entries());
     ctx.clearRect(0, 0, data.board.width, data.board.height)
     for (const [i, row] of data.board.tileSet.entries()) {
         for (const [j, colum] of row.entries()) {
-            const blockWidth = data.board.width / row.length
-            const blockHeight = data.board.height / data.board.tileSet.length
             const x = j * blockWidth
             const y = i * blockHeight
-            ctx.fillRect(x, y, blockWidth, blockHeight)
+            ctx.fillStyle = "gray"
+            ctx.fillRect(x + 0.5, y + 0.5, blockWidth - 1, blockHeight - 1)
         }
     }
+
+
+    // render hover
+    switch (data.playingState) {
+        case 'DRAW_PLAYING':
+            break
+        case 'STANDBY_PLAYING':
+            break
+        case 'SCAN_PLAYING':
+            break
+        case 'MOVE_PLAYING':
+            renderBoardMovingGUI()
+            break
+    }
+
+    // render player position
+    for (const info of data.playerInfos) {
+        renderPlayer(info)
+    }
+}
+
+function renderBoardMovingGUI() {
+    const canvas = $("#board").get(0)
+    const ctx = canvas.getContext('2d')
+    const blockWidth = data.board.width / data.board.tileSet[0].length
+    const blockHeight = data.board.height / data.board.tileSet.length
+    const fullPointsPath = [data.myPlayerInfo.position, ...data.movingPathSelection.movePath]
+    // console.log(fullPointsPath[fullPointsPath.length - 1]);
+    for (let index = 0; index < fullPointsPath.length - 1; index++) {
+        const current = fullPointsPath[index];
+        const next = fullPointsPath[index + 1]
+        blockPathIterator(current, next, (x, y) => {
+            ctx.fillStyle = "yellow"
+            ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
+        })
+    }
+
+    blockPathIterator(fullPointsPath[fullPointsPath.length - 1], data.event.boardMouseMovePosition.tile, (x, y) => {
+        ctx.fillStyle = "green"
+        ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
+    })
+}
+
+function blockPathIterator(from, to, callback) {
+    const xLength = to.x - from.x
+    const yLength = to.y - from.y
+    const xAbsLength = Math.abs(xLength)
+    const yAbsLength = Math.abs(yLength)
+    const xDirection = xLength / xAbsLength
+    const yDirection = yLength / yAbsLength
+    // callback(to.x, to.y)
+    if (xAbsLength > yAbsLength) {
+        for (let index = 0; index <= xAbsLength; index++) {
+            callback(from.x + index * xDirection, from.y)
+        }
+        for (let index = 0; index <= yAbsLength; index++) {
+            callback(from.x + xLength, from.y + index * yDirection)
+        }
+    }
+    else {
+        for (let index = 0; index <= yAbsLength; index++) {
+            callback(from.x, from.y + index * yDirection)
+        }
+        for (let index = 0; index <= xAbsLength; index++) {
+            callback(from.x + index * xDirection, from.y + yLength)
+        }
+    }
+}
+
+function renderPlayer(playerInfo) {
+    const { x, y } = playerInfo.position
+    const blockWidth = data.board.width / data.board.tileSet[0].length
+    const blockHeight = data.board.height / data.board.tileSet.length
+    const realX = x * blockWidth
+    const realY = y * blockHeight
+
+    const canvas = $("#board").get(0)
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = "blue";
+    ctx.fillRect(realX + 0.5, realY + 0.5, blockWidth - 1, blockHeight - 1)
 }
 
 function renderPlayersMenu() {
@@ -111,7 +211,7 @@ function renderAnotherPlayerTurnPanel() {
             renderMessageToPanel(`${currentPlayerInfo.player.name} is scanning.`)
             break
         case 'MOVE_PLAYING':
-            renderMessageToPanel(`${currentPlayerInfo.player.name} is move the vehicle.`)
+            renderMessageToPanel(`${currentPlayerInfo.player.name} is moving the vehicle.`)
             break
     }
 }
@@ -148,8 +248,7 @@ function renderMyTurnPanel() {
             })
             $("#move-button").off("click")
             $("#move-button").on("click", async () => {
-                await requester.chooseAction('MOVE')
-                data.stateInfo = { movePath: [] }
+                await requester.chooseAction('MOVE_VEHICLE')
             })
             $("#end-turn-button").off("click")
             $("#end-turn-button").on("click", async () => {
@@ -166,11 +265,16 @@ function renderMyTurnPanel() {
         case 'MOVE_PLAYING':
             $("#panel").html(`
             <h2>Select your path</h2>
-            <button id="start-moving-button"> Start moving</button>
+            <button id="start-moving-button">Start moving</button>
+            <button id="clear-path-button">Clear path</button>
             `)
-            $("#start-scan-button").on("click", async () => {
+            $("#start-moving-button").on("click", async () => {
                 await requester.move(data.stateInfo.movePath)
             })
+            $("#clear-path-button").on("click", async () => {
+                data.movingPathSelection.movePath = []
+            })
+
             break
     }
 }
@@ -234,4 +338,19 @@ async function onDraw() {
     }
     await updatePlayingState()
     renderPanel()
+}
+
+function boardClickHandler() {
+    switch (data.playingState) {
+        case 'DRAW_PLAYING':
+            break
+        case 'STANDBY_PLAYING':
+            break
+        case 'SCAN_PLAYING':
+            break
+        case 'MOVE_PLAYING':
+            const { x, y } = data.event.boardMouseMovePosition.tile
+            data.movingPathSelection.movePath.push({ x, y })
+            break
+    }
 }
