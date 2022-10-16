@@ -171,6 +171,12 @@ function renderBoardMovingGUI() {
     const blockWidth = data.board.width / data.board.tileSet[0].length
     const blockHeight = data.board.height / data.board.tileSet.length
     const fullPointsPath = [data.myPlayerInfo.position, ...data.movingPathSelection.movePath]
+
+    blockPathIterator(fullPointsPath[fullPointsPath.length - 1], data.event.boardMouseMovePosition.tile, (x, y) => {
+        ctx.fillStyle = "green"
+        ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
+    })
+
     for (let index = 0; index < fullPointsPath.length - 1; index++) {
         const current = fullPointsPath[index];
         const next = fullPointsPath[index + 1]
@@ -180,10 +186,6 @@ function renderBoardMovingGUI() {
         })
     }
 
-    blockPathIterator(fullPointsPath[fullPointsPath.length - 1], data.event.boardMouseMovePosition.tile, (x, y) => {
-        ctx.fillStyle = "green"
-        ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
-    })
 }
 
 function renderBoardScanGUI() {
@@ -383,7 +385,7 @@ function getRealMovingPath() {
         })
         realPath.pop()
     }
-    // realPath.push(path[path.length - 1])
+    realPath.push(path[path.length - 1])
     return realPath
 }
 
