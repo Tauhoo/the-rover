@@ -5,6 +5,8 @@ import { Game } from '../game/game'
 import playerRouter from './player'
 import readinessRouter from './readiness'
 import playerTurn from './playerTurn'
+import { State } from '../game/state'
+import { EndStateManager } from '../game/endGameState'
 
 const router = express.Router()
 
@@ -28,6 +30,13 @@ router.put('/start', (req, res) => {
 router.get('/state', (req, res) => {
   const game: Game = req.app.get('game')
   res.send({ state: game.stateManager.state })
+})
+
+router.get('/winner', (req, res) => {
+  const game: Game = req.app.get('game')
+  if (game.stateManager.state !== State.END) return res.sendStatus(404)
+  const manager = game.stateManager as EndStateManager
+  res.send({ winner: game.playerManager.getPlayerByID(manager.winnerID) })
 })
 
 router.use('/players', playerRouter)

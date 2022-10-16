@@ -8,10 +8,11 @@ import { PlayingStateManager } from '../game/playingState'
 import { ScanResult } from '../game/scanPlayingState'
 import { State } from '../game/state'
 import { Vehicle } from '../game/vehicle'
+import { EndStateManager } from '../game/endGameState'
 
 enum PlayerTurnClientTopic {
   SCAN = 'SCAN',
-  GAME_END = 'SCAN',
+  GAME_END = 'GAME_END',
   MOVE = 'MOVE',
   DRAW = 'DRAW',
   CHOOSE_ACTION = 'CHOOSE_ACTION',
@@ -104,22 +105,24 @@ router.post('/scanner/scan', (req, res) => {
     type: ActionType.SCAN,
     info: null,
   })
+  console.log(game.stateManager.state)
 
-  const manager = game.stateManager as PlayingStateManager
-  const scanRecord = manager.getCurrentPlayerGameInfo().scanRecords
-  const result = scanRecord[scanRecord.length - 1].result
-
-  if (result === ScanResult.FOUND) {
+  if (game.stateManager.state === State.END) {
+    const manager = game.stateManager as EndStateManager
     io.emit(PlayerTurnClientTopic.GAME_END, {
-      winnerID: manager.getCurrentPlayerGameInfo().player.id,
+      winnerID: manager.winnerID,
     })
+    res.send({ result: ScanResult.FOUND })
   } else {
+    const manager = game.stateManager as PlayingStateManager
+    const scanRecord = manager.getCurrentPlayerGameInfo().scanRecords
+    const result = scanRecord[scanRecord.length - 1].result
+
     io.emit(PlayerTurnClientTopic.SCAN, {
       playerID: manager.getCurrentPlayerGameInfo().player.id,
     })
+    res.send({ result })
   }
-
-  res.send({ result })
 })
 
 router.use('/vehicle', (req, res, next) => {

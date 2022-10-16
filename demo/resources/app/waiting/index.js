@@ -20,5 +20,5 @@ function onGameStart() {
 }
 
 function renderPlayerList(players) {
-    $("#root").html(players.map(({ id, name }) => `<h2>${id} - ${name}</h2>`))
+    $("#root").html(players.map(({ id, name, color }) => `<h2><div style="height: 30px; width: 30px; background: #${color}; display: inline-block;"></div> ${name}</h2>`))
 }

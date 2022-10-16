@@ -8,6 +8,10 @@ class Requester {
         return await this.api.get("/game/state")
     }
 
+    async getWinner() {
+        return await this.api.get("/game/winner")
+    }
+
     async startGame() {
         return await this.api.put("/game/start")
     }

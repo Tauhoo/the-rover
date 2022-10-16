@@ -18,7 +18,7 @@ function onAllPlayerIsReady() {
 }
 
 function renderReadinessList(readinessInfoList) {
-    let html = readinessInfoList.map(({ id, name, isReady }) => `<h2>${id} - ${name} - ${isReady ? "Ready" : "Not Ready"}</h2>`)
+    let html = readinessInfoList.map(({ id, name, isReady }) => `<h2>${name} - ${isReady ? "Ready" : "Not Ready"}</h2>`)
     $("#root").html(html)
 }
 

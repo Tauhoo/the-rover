@@ -9,6 +9,7 @@ var data = {
     playerInfos: [],
     myPlayerInfo: null,
     movingPathSelection: { movePath: [] },
+    displayScanHistory: null,
     event: {
         boardMouseMovePosition: {
             cursor: { x: 0, y: 0 },
@@ -88,16 +89,20 @@ function renderBoard() {
     const blockWidth = data.board.width / data.board.tileSet[0].length
     const blockHeight = data.board.height / data.board.tileSet.length
 
-    ctx.clearRect(0, 0, data.board.width, data.board.height)
+    ctx.fillStyle = "gray"
+    ctx.fillRect(0, 0, data.board.width, data.board.height)
     for (const [i, row] of data.board.tileSet.entries()) {
         for (const [j, colum] of row.entries()) {
             const x = j * blockWidth
             const y = i * blockHeight
-            ctx.fillStyle = "gray"
+            ctx.fillStyle = "white"
             ctx.fillRect(x + 0.5, y + 0.5, blockWidth - 1, blockHeight - 1)
         }
     }
 
+    if (data.displayScanHistory !== null) {
+        renderScanHistoryBoard()
+    }
 
     // render hover
     switch (data.playingState) {
@@ -113,10 +118,51 @@ function renderBoard() {
             break
     }
 
+
     // render player position
     for (const info of data.playerInfos) {
         renderPlayer(info)
     }
+
+}
+
+function renderScanHistoryBoard() {
+    let playerInfo = null
+    if (data.displayScanHistory === data.myPlayerInfo.player.id) {
+        playerInfo = data.myPlayerInfo
+    } else {
+        const playerInfos = data.playerInfos.filter(({ player }) => player.id === data.displayScanHistory)
+        if (playerInfos.length !== 1) return
+        playerInfo = playerInfos[0]
+    }
+
+    /**
+     * @type {HTMLCanvasElement}
+     */
+
+    const canvas = $("#board").get(0)
+    const ctx = canvas.getContext('2d')
+    const blockWidth = data.board.width / data.board.tileSet[0].length
+    const blockHeight = data.board.height / data.board.tileSet.length
+    for (const record of playerInfo.scanRecords) {
+        blockCircularPathIterator(record.position, fixedScanRadiusLength, (x, y) => {
+            ctx.fillStyle = "gray"
+            ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
+        })
+
+        if (playerInfo.player.id !== data.myPlayerInfo.player.id) {
+            ctx.fillStyle = "black"
+        } else {
+            if (record.result === 'NEAR') {
+                ctx.fillStyle = "green"
+            } else if (record.result === 'NOT_NEAR') {
+                ctx.fillStyle = "red"
+            }
+        }
+        ctx.fillRect(record.position.x * blockWidth, record.position.y * blockHeight, blockWidth, blockHeight)
+
+    }
+
 }
 
 function renderBoardMovingGUI() {
@@ -198,17 +244,39 @@ function renderPlayer(playerInfo) {
 
     const canvas = $("#board").get(0)
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "#" + playerInfo.player.color;
     ctx.fillRect(realX + 0.5, realY + 0.5, blockWidth - 1, blockHeight - 1)
 }
 
 function renderPlayersMenu() {
     $("#player-infos-container").html(data.playerInfos.map((info) => `
-    <div ${data.currentPlayerID === info.player.id ? `class="active-player"` : ""}>
-        <h2>${info.player.name}</h2>
+    <div style="background-color: #${info.player.color};" ${data.currentPlayerID === info.player.id ? `class="active-player"` : ""}>
+        <div style="font-size: 24px;">${info.player.name}</div>
+        <div>
+            <button id="show-scan-history-button-${info.player.id}">show scan history</button>
+        </div>
     </div>
     `).join(""))
+
+    for (const info of data.playerInfos) {
+        const elem = $(`#show-scan-history-button-${info.player.id}`)
+        elem.off("click")
+        if (data.displayScanHistory === info.player.id) {
+            $(`#show-scan-history-button-${info.player.id}`).html(`unshow scan history`)
+            elem.on("click", () => {
+                data.displayScanHistory = null
+                renderPlayersMenu()
+            })
+        } else {
+            $(`#show-scan-history-button-${info.player.id}`).html(`show scan history`)
+            elem.on("click", () => {
+                data.displayScanHistory = info.player.id
+                renderPlayersMenu()
+            })
+        }
+    }
 }
+
 
 function renderPanel() {
     console.log("RENDER PANEL: is_my_turn =", data.currentPlayerID === data.myPlayerInfo.player.id);
@@ -331,9 +399,8 @@ async function onScan() {
     console.log("TOPIC ACTIVATE: SCAN");
     if (isMyTurn()) {
         await updateMyPlayerInfo()
-    } else {
-        await updatePlayerInfos()
     }
+    await updatePlayerInfos()
     await updatePlayingState()
     const result = data.myPlayerInfo.scanRecords[data.myPlayerInfo.scanRecords.length - 1].result
     if (result === 'NEAR') {
@@ -347,6 +414,7 @@ async function onScan() {
 
 function onGameEnd() {
     console.log("TOPIC ACTIVATE: END");
+    window.location.href = "/resources/app/end"
 }
 
 async function onMove() {

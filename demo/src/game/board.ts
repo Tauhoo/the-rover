@@ -21,6 +21,7 @@ export class Board {
     const x = Math.floor(Math.random() * options.width)
     const y = Math.floor(Math.random() * options.height)
     this.graxiumPosition = new Victer(x, y)
+    console.log(`Graxium position: (${x},${y})`)
   }
 
   getTileByPosition(position: Victer): Tile {

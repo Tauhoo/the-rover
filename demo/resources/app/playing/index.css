@@ -13,12 +13,15 @@
 }
 
 #player-infos-container > div {
-  border-style: solid;
-  padding: 0px 20px;
+  padding: 10px 20px;
+  display: grid;
+  gap: 10px;
 }
 
 .active-player {
-  background-color: greenyellow;
+  border-style: solid;
+  border-width: 5px;
+  border-color: black;
 }
 
 #panel {
