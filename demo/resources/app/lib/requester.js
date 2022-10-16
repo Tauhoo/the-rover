@@ -53,7 +53,7 @@ class Requester {
     }
 
     async move(path) {
-        return await this.api.put('/game/player-turns/vehicle/move', path)
+        return await this.api.put('/game/player-turns/vehicle/move', { path })
     }
 
     async drawCard() {

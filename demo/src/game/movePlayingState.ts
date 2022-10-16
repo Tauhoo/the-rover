@@ -24,7 +24,7 @@ export class MovePlayingStateManager extends StateManager {
     }
     for (let index = 0; index < path.length - 1; index++) {
       const current = path[index].clone()
-      const next = path[index].clone()
+      const next = path[index + 1].clone()
       const { x, y } = current.subtract(next)
       if (Math.abs(x) + Math.abs(y) != 1) {
         return false
@@ -46,7 +46,7 @@ export class MovePlayingStateManager extends StateManager {
   move(info: MoveVehicleInfo) {
     const playerInfo = this.context.getCurrentPlayerGameInfo()
     if (!this.validatePath(info.path)) return
-    if (info.path[0] !== playerInfo.position) return
+    if (!info.path[0].isEqualTo(playerInfo.position)) return
     playerInfo.position = info.path[info.path.length - 1]
   }
 }

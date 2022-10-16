@@ -12,7 +12,6 @@ async function startGame() {
 }
 
 function onUpdatePlayer(msg) {
-    console.log(msg);
     renderPlayerList(msg)
 }
 
@@ -21,6 +20,5 @@ function onGameStart() {
 }
 
 function renderPlayerList(players) {
-    console.log(players);
     $("#root").html(players.map(({ id, name }) => `<h2>${id} - ${name}</h2>`))
 }

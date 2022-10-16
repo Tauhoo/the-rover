@@ -82,7 +82,6 @@ router.get('/hidden-player-game-infos', (req, res) => {
       })),
     })
   )
-  console.log(playerInfos)
 
   res.send(playerInfos)
 })
@@ -136,9 +135,14 @@ router.use('/vehicle', (req, res, next) => {
 router.put('/vehicle/move', (req, res) => {
   const game: Game = req.app.get('game')
   const io: Server = res.app.get('io')
+
   game.stateManager.doAction({
     type: ActionType.MOVE_VEHICLE,
-    info: req.body,
+    info: {
+      path: req.body.path.map(
+        (point: { x: number; y: number }) => new Victor(point.x, point.y)
+      ),
+    },
   })
   res.send({ state: game.stateManager.state })
   io.emit(PlayerTurnClientTopic.MOVE, {

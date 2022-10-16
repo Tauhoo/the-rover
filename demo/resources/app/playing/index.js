@@ -122,7 +122,6 @@ function renderBoardMovingGUI() {
     const blockWidth = data.board.width / data.board.tileSet[0].length
     const blockHeight = data.board.height / data.board.tileSet.length
     const fullPointsPath = [data.myPlayerInfo.position, ...data.movingPathSelection.movePath]
-    // console.log(fullPointsPath[fullPointsPath.length - 1]);
     for (let index = 0; index < fullPointsPath.length - 1; index++) {
         const current = fullPointsPath[index];
         const next = fullPointsPath[index + 1]
@@ -147,7 +146,7 @@ function blockPathIterator(from, to, callback) {
     const yDirection = yLength / yAbsLength
     // callback(to.x, to.y)
     if (xAbsLength > yAbsLength) {
-        for (let index = 0; index <= xAbsLength; index++) {
+        for (let index = 0; index < xAbsLength; index++) {
             callback(from.x + index * xDirection, from.y)
         }
         for (let index = 0; index <= yAbsLength; index++) {
@@ -155,7 +154,7 @@ function blockPathIterator(from, to, callback) {
         }
     }
     else {
-        for (let index = 0; index <= yAbsLength; index++) {
+        for (let index = 0; index < yAbsLength; index++) {
             callback(from.x, from.y + index * yDirection)
         }
         for (let index = 0; index <= xAbsLength; index++) {
@@ -178,7 +177,6 @@ function renderPlayer(playerInfo) {
 }
 
 function renderPlayersMenu() {
-    console.log(data.playerInfos);
     $("#player-infos-container").html(data.playerInfos.map((info) => `
     <div ${data.currentPlayerID === info.player.id ? `class="active-player"` : ""}>
         <h2>${info.player.name}</h2>
@@ -187,7 +185,6 @@ function renderPlayersMenu() {
 }
 
 function renderPanel() {
-    console.log(data);
     console.log("RENDER PANEL: is_my_turn =", data.currentPlayerID === data.myPlayerInfo.player.id);
     if (data.currentPlayerID === data.myPlayerInfo.player.id) {
         renderMyTurnPanel()
@@ -269,7 +266,9 @@ function renderMyTurnPanel() {
             <button id="clear-path-button">Clear path</button>
             `)
             $("#start-moving-button").on("click", async () => {
-                await requester.move(data.stateInfo.movePath)
+                const path = getRealMovingPath()
+                data.movingPathSelection.movePath = []
+                await requester.move(path)
             })
             $("#clear-path-button").on("click", async () => {
                 data.movingPathSelection.movePath = []
@@ -277,6 +276,21 @@ function renderMyTurnPanel() {
 
             break
     }
+}
+
+function getRealMovingPath() {
+    let realPath = []
+    let path = [data.myPlayerInfo.position, ...data.movingPathSelection.movePath]
+    for (let index = 0; index < path.length - 1; index++) {
+        const current = path[index]
+        const next = path[index + 1]
+        blockPathIterator(current, next, (x, y) => {
+            realPath.push({ x, y })
+        })
+        realPath.pop()
+    }
+    // realPath.push(path[path.length - 1])
+    return realPath
 }
 
 function registerTopic() {
@@ -313,9 +327,8 @@ async function onMove() {
     console.log("TOPIC ACTIVATE: MOVE");
     if (isMyTurn()) {
         await updateMyPlayerInfo()
-    } else {
-        await updatePlayerInfos()
     }
+    await updatePlayerInfos()
     await updatePlayingState()
     renderBoard()
     renderPanel()
