@@ -14,16 +14,6 @@ export class StandbyPlayingStateManager extends StateManager {
   }
 
   doAction(action: Action): void {
-    if (action.type === ActionType.END_TURN) {
-      this.context.currentTurnPlayerIndex =
-        (this.context.currentTurnPlayerIndex + 1) %
-        this.context.context.playerManager.players.length
-
-      this.context.subPlayingStateManager = new DrawPlayingStateManager(
-        this.context
-      )
-    }
-
     if (action.type === ActionType.CHOOSE_ACTION) {
       if ((action.info as PlayingActionType) === PlayingActionType.SCAN) {
         this.context.subPlayingStateManager = new ScanPlayingStateManager(
@@ -33,6 +23,16 @@ export class StandbyPlayingStateManager extends StateManager {
         (action.info as PlayingActionType) === PlayingActionType.MOVE_VEHICLE
       ) {
         this.context.subPlayingStateManager = new MovePlayingStateManager(
+          this.context
+        )
+      } else if (
+        (action.info as PlayingActionType) === PlayingActionType.END_TURN
+      ) {
+        this.context.currentTurnPlayerIndex =
+          (this.context.currentTurnPlayerIndex + 1) %
+          this.context.context.playerManager.players.length
+
+        this.context.subPlayingStateManager = new DrawPlayingStateManager(
           this.context
         )
       }

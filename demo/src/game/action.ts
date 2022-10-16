@@ -14,7 +14,6 @@ export enum ActionType {
   DRAW_CARD = 'DRAW_CARD',
   //  -> standby
   CHOOSE_ACTION = 'CHOOSE_ACTION',
-  END_TURN = 'END_TURN',
   //  -> scan
   SCAN = 'SCAN',
   //  -> move
@@ -26,6 +25,7 @@ export enum PlayingActionType {
   SCAN = 'SCAN',
   //  -> move
   MOVE_VEHICLE = 'MOVE_VEHICLE',
+  END_TURN = 'END_TURN',
 }
 
 type ActionListener = (action: Action) => void

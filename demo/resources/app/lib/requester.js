@@ -44,7 +44,7 @@ class Requester {
         return await this.api.get('/game/player-turns/playing-state')
     }
 
-    async getTileSetState() {
+    async getTileSet() {
         return await this.api.get('/game/player-turns/board/tile-set')
     }
 
@@ -56,12 +56,12 @@ class Requester {
         return await this.api.put('/game/player-turns/vehicle/move', path)
     }
 
-    async chooseAction(playingActionType) {
-        return await this.api.put("/game/player-turns/choose-action", { playingActionType })
+    async drawCard() {
+        return await this.api.post('/game/player-turns/card/draw')
     }
 
-    async endTurn() {
-        return await this.api.put("/game/player-turns/end")
+    async chooseAction(playingActionType) {
+        return await this.api.put("/game/player-turns/choose-action", { playingActionType })
     }
 }
 

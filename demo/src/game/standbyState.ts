@@ -1,6 +1,8 @@
 import { Action, ActionType } from './action'
+import { BoardOptions } from './board'
 import { Game } from './game'
 import { Player } from './player'
+import { PlayerGameInfo } from './playerGameInfo'
 import { PlayingStateManager } from './playingState'
 import { State, StateManager } from './state'
 
@@ -24,7 +26,7 @@ export class StandbyStateManager extends StateManager {
         this.context.stateManager = new PlayingStateManager(
           this.context,
           action.info.boardGameOptions,
-          action.info.PlayerGameInfos
+          action.info.playerGameInfos
         )
       }
     }

@@ -1,0 +1,36 @@
+#root {
+  width: 100%;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 20px;
+}
+
+#player-infos-container {
+  width: 100%;
+  display: grid;
+  gap: 20px;
+  grid-auto-rows: max-content;
+}
+
+#player-infos-container > div {
+  border-style: solid;
+  padding: 0px 20px;
+}
+
+.active-player {
+  background-color: greenyellow;
+}
+
+#panel {
+  width: 100%;
+  border-style: solid;
+  padding: 10px 20px;
+}
+
+body {
+  padding: 0px 50px;
+}
+
+* {
+  box-sizing: border-box;
+}

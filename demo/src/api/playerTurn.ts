@@ -13,7 +13,8 @@ enum PlayerTurnClientTopic {
   SCAN = 'SCAN',
   GAME_END = 'SCAN',
   MOVE = 'MOVE',
-  TURN_END = 'TURN_END',
+  DRAW = 'DRAW',
+  CHOOSE_ACTION = 'CHOOSE_ACTION',
 }
 
 const router = express.Router()
@@ -43,7 +44,7 @@ router.get('/current-player-turn', (req, res) => {
 })
 
 router.get('/player-game-infos/:id', (req, res) => {
-  const id = req.query.id as string
+  const id = req.params.id as string
   const game: Game = req.app.get('game')
   const manager = game.stateManager as PlayingStateManager
   let playerInfo = manager.getPlayerInfoByID(id)
@@ -69,6 +70,7 @@ type HiddenScanRecord = {
 router.get('/hidden-player-game-infos', (req, res) => {
   const game: Game = req.app.get('game')
   const manager = game.stateManager as PlayingStateManager
+
   const playerInfos: HiddenPlayerGameInfo[] = manager.playerGameInfos.map(
     value => ({
       player: value.player,
@@ -80,13 +82,17 @@ router.get('/hidden-player-game-infos', (req, res) => {
       })),
     })
   )
+  console.log(playerInfos)
 
   res.send(playerInfos)
 })
 
 router.use('/scanner', (req, res, next) => {
   const game: Game = req.app.get('game')
-  if ((game.stateManager as PlayingStateManager).state !== State.SCAN_PLAYING)
+  if (
+    (game.stateManager as PlayingStateManager).subPlayingStateManager.state !==
+    State.SCAN_PLAYING
+  )
     return res.sendStatus(404)
   next()
 })
@@ -119,7 +125,10 @@ router.post('/scanner/scan', (req, res) => {
 
 router.use('/vehicle', (req, res, next) => {
   const game: Game = req.app.get('game')
-  if ((game.stateManager as PlayingStateManager).state !== State.MOVE_PLAYING)
+  if (
+    (game.stateManager as PlayingStateManager).subPlayingStateManager.state !==
+    State.MOVE_PLAYING
+  )
     return res.sendStatus(404)
   next()
 })
@@ -141,31 +150,35 @@ router.put('/vehicle/move', (req, res) => {
 
 router.use('/card', (req, res, next) => {
   const game: Game = req.app.get('game')
-  if ((game.stateManager as PlayingStateManager).state !== State.DRAW_PLAYING)
+  if (
+    (game.stateManager as PlayingStateManager).subPlayingStateManager.state !==
+    State.DRAW_PLAYING
+  )
     return res.sendStatus(404)
   next()
 })
 
 router.put('/choose-action', (req, res) => {
   const game: Game = req.app.get('game')
+  const io: Server = res.app.get('io')
   game.stateManager.doAction({
     type: ActionType.CHOOSE_ACTION,
     info: req.body.playingActionType,
   })
   res.send({ action: req.body.playingActionType })
+  io.emit(PlayerTurnClientTopic.CHOOSE_ACTION, {
+    playingActionType: req.body.playingActionType,
+  })
 })
 
-router.put('/end', (req, res) => {
+router.post('/card/draw', (req, res) => {
   const game: Game = req.app.get('game')
   const io: Server = res.app.get('io')
   game.stateManager.doAction({
-    type: ActionType.END_TURN,
+    type: ActionType.DRAW_CARD,
     info: null,
   })
-  const manager = game.stateManager as PlayingStateManager
-  let nextPlayerID = manager.getCurrentPlayerGameInfo().player.id
-  io.emit(PlayerTurnClientTopic.TURN_END, { nextPlayerID })
-  res.send({ nextPlayerID })
+  io.emit(PlayerTurnClientTopic.DRAW)
 })
 
 export default router

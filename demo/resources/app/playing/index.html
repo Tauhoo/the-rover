@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
     <title>The Rover | playing</title>
 </head>
 
 <body>
     <h1>Playing</h1>
-    <canvas id="board" height="500px" width="500px"></canvas>
+    <div id="root">
+        <canvas id="board" height="500px" width="500px"></canvas>
+        <div id="player-infos-container"></div>
+    </div>
+    <br>
+    <div id="panel"></div>
     <script src="/resources/app/lib/external/axios.js"></script>
     <script src="/resources/app/lib/external/socket.io.js"></script>
     <script src="/resources/app/lib/external/jquery-3.6.1.js"></script>
