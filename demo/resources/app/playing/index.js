@@ -17,6 +17,8 @@ var data = {
     }
 }
 
+const fixedScanRadiusLength = 5
+
 jQuery(async function () {
     await initData()
     registerTopic()
@@ -104,6 +106,7 @@ function renderBoard() {
         case 'STANDBY_PLAYING':
             break
         case 'SCAN_PLAYING':
+            renderBoardScanGUI()
             break
         case 'MOVE_PLAYING':
             renderBoardMovingGUI()
@@ -137,6 +140,29 @@ function renderBoardMovingGUI() {
     })
 }
 
+function renderBoardScanGUI() {
+    const canvas = $("#board").get(0)
+    const ctx = canvas.getContext('2d')
+    const blockWidth = data.board.width / data.board.tileSet[0].length
+    const blockHeight = data.board.height / data.board.tileSet.length
+    const position = data.myPlayerInfo.position
+    // const tileX = Math.floor(position.x / blockWidth)
+    // const tileY = Math.floor(position.y / blockHeight)
+    blockCircularPathIterator(position, fixedScanRadiusLength, (x, y) => {
+        ctx.fillStyle = "yellow"
+        ctx.fillRect(x * blockWidth + 0.5, y * blockHeight + 0.5, blockWidth - 1, blockHeight - 1)
+    })
+}
+function blockCircularPathIterator(position, radius, callback) {
+    callback(position.x, position.y + radius)
+    for (let index = 0; index <= radius; index++) {
+        callback(position.x + index, position.y + radius - index)
+        callback(position.x - index, position.y - radius + index)
+        callback(position.x + index, position.y - radius + index)
+        callback(position.x - index, position.y + radius - index)
+    }
+
+}
 function blockPathIterator(from, to, callback) {
     const xLength = to.x - from.x
     const yLength = to.y - from.y
@@ -309,7 +335,7 @@ async function onScan() {
         await updatePlayerInfos()
     }
     await updatePlayingState()
-    const result = data.myPlayerInfo.scanRecords[data.myPlayerInfo.scanRecords.length - 1]
+    const result = data.myPlayerInfo.scanRecords[data.myPlayerInfo.scanRecords.length - 1].result
     if (result === 'NEAR') {
         renderNotifyToPanel("Scanner detects Graxium around")
     } else if (result === 'NOT_NEAR') {
