@@ -4,7 +4,8 @@ This repository contain the materials and my work on a game design project named
 
 ## Submittions
 
-- [Game design submittion](./docs/GameDesignSubmittion)
+- [Game design plan submittion](./docs/GameDesignSubmittion)
+- [Game feature design submittion](./docs/GameFeatureDesignSubmittion/)
 
 ## Game Type
 
