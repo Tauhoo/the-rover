@@ -14,6 +14,8 @@ It's a board game-like game. Each player takes their turn and does some action w
 
 ## Content Table
 
+Belows are just draft of the project. If you want to see the final, you can go to the submittions section.
+
 - [Theme](./docs/Theme.md)
 - [Mechanism](./docs/Mechanism.md)
 - [AutoParts](./docs/AutoParts.md)
